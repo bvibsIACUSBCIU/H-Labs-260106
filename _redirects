@@ -1,0 +1,5 @@
+# SPA fallback: send all non-asset requests to index.html with 200
+/*    /index.html   200
+
+# Example: cache static assets longer (uncomment if you want to use)
+# /assets/*  /assets/:splat  200  [cache-control=public,max-age=31536000]
