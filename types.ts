@@ -16,6 +16,16 @@ export interface MediaCategory {
   channels: MediaChannel[];
 }
 
+export interface MediaPartner {
+  name: string;
+  logo: string;
+}
+
+export interface StrategicPartner {
+  name: string;
+  logo: string;
+}
+
 export interface AirdropItem {
   id: string;
   name: string;

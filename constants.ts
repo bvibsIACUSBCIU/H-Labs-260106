@@ -1,4 +1,4 @@
-import { TechCase, MediaCategory, AirdropItem, CourseCategory, IntelItem, WhaleAlert, BountyTask, TrendingTopic, SmartMoneyFlow, KOLBenefit, MarketTicker, SectorData, CexFlow, DevActivity, StablecoinMetric } from './types';
+import { TechCase, MediaCategory, AirdropItem, CourseCategory, IntelItem, WhaleAlert, BountyTask, TrendingTopic, SmartMoneyFlow, KOLBenefit, MarketTicker, SectorData, CexFlow, DevActivity, StablecoinMetric, MediaPartner, StrategicPartner } from './types';
 
 // --- NEW SUCCESS CASES (0 to 1 Battle Records) ---
 export const successCases = [
@@ -87,8 +87,24 @@ export const devActivity: DevActivity[] = [];
 
 export const stablecoinData: StablecoinMetric[] = [];
 
-export const strategicPartners = ["Binance Labs", "Polychain", "Animoca", "Wintermute", "Delphi", "a16z", "Sequoia", "Coinbase Ventures"];
-export const mediaPartners = ["CoinDesk", "The Block", "Decrypt", "Foresight", "CoinTelegraph", "Odaily"];
+export const strategicPartners: StrategicPartner[] = [
+  { name: "Binance Labs", logo: "https://static.yzilabs.com/yzi-lab/static/images/logo.png" },
+  { name: "Polychain", logo: "https://re2cruiting.cdn.greenhouse.io/external_greenhouse_job_boards/logos/000/010/292/original/polychain_original_(2).png?1504293990" },
+  { name: "Animoca", logo: "https://static.wixstatic.com/media/0de4af_81797e1ddad04c02905527b26c5444fa~mv2.png/v1/fill/w_149,h_84,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/Animoca%20brands%20standard%20logo.png" },
+  { name: "Wintermute", logo: "data:image/png;base64---,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAMAAABF0y+mAAAAKlBMVEVHcEwHCwkHCwkHAAEHCwkC1EkFhi8B5E4FbygEsT0Dw0MGWCAA/FcGNhX3URuFAAAAA3RSTlMAbXUKSlSHAAAA20lEQVQokX3TCQ6EIAwFUPR3YfP+150WGEGjNsYAz6+mYghho8fagtX+bET7a65n343oRMw13BFyLs3hQJQ6sRZckXWi8gURE0/kFLGiYkXoghbsCHQc0Y5KDZEzGpKe6EFfQWY2teGIhhH0FZYYhduwR0MP+uUsEDu43aRFQ3tVK84CR0hmn2tDa062qtY0Rzv1ubXJk6LpoOIP9iRpoSOpYLyQMw7tST3ghNkhRE1FHbUkjVjb15hZRZT5T8vHNi5cKxfMz75uE+OVrjga/4a3+t6an5v663f4ATidDZ3pPk+oAAAAAElFTkSuQmCC" },
+  { name: "Delphi Digital", logo: "https://members.delphidigital.io/_ipx/f_webp&s_88x86/images/delphi_pro_logo.png" },
+  { name: "a16z crypto", logo: "https://a16zcrypto.com/wp-content/themes/a16z-crypto/assets/images/logo.svg" },
+  { name: "Sequoia", logo: "--data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAMAAABF0y+mAAAAWlBMVEX////3+vrL3Nbj7OnT4t3w9fT0+fgAXzYAWi59qZlYlYDF19C90soAXzcAaUYAaEQAZkKJsqNjm4gAakcAc1Tn7+03hGsXfF9Ei3MsgWbR4dyavrJuoY9RkXtXjS54AAAAoklEQVR4AcTPRQLDMAxE0Qmj2W74/scsg+Iyv+03SPiXIAyBKIyBMEyQhGvpMUZZnqLISiDLKtSM8yw+RSFTKK4Bw0NUxlrxUqyZMZeflRVcvZZciHIBwosNgJCuQmMAtJJfWQXomFzLey9KDcKLDa7HIQBUsTdG87jWSrOXxX4c9HigyU3Z4arIBrjKJUApBZH1ICZmKBbTh+tqLlltoJIsAIV+DYaUANV7AAAAAElFTkSuQmCC" },
+  { name: "Coinbase Ventures", logo: "https://static-assets.coinbase.com/ui-infra/illustration/v1/pictogram/svg/light/coinbaseLogoNavigation-4.svg" }
+];
+export const mediaPartners: MediaPartner[] = [
+  { name: "CoinDesk", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/40/CoinDesk_logo.svg/500px-CoinDesk_logo.svg.png?20221224092106" },
+  { name: "The Block", logo: "https:-//getlogovector.com/wp-content/uploads/2022/09/the-block-crypto-simplified-logo-vector-2022.png" },
+  { name: "Decrypt", logo: "https://logotyp.us/img/logotypus.svg" },
+  { name: "Foresight News", logo: "https:-//getlogovector.com/wp-content/uploads/2020/02/foresight-news-logo-vector.png" },
+  { name: "CoinTelegraph", logo: "https:-//getlogovector.com/wp-content/uploads/2019/10/cointelegraph-logo-vector.png" },
+  { name: "Odaily", logo: "https://www.odaily.news/_next/static/media/logo-banner.71275261.svg" }
+];
 
 export const academyCourses: CourseCategory[] = [
   {
