@@ -32,6 +32,12 @@ h-labs-ecosystem-os/
     ├── DashboardSidebar.tsx   # 侧边导航栏
     ├── MobileBottomNav.tsx    # 移动端底部导航
     ├── WarRoomDashboard.tsx   # 作战室视图
+    ├── WarDash/               # 作战室子组件目录 
+    │   ├── MarketTicker.tsx   # 市场行情滚动条
+    │   ├── AlphaNews.tsx      # 快讯
+    │   ├── OnChainAnalysis.tsx # 链上分析
+    │   ├── TelegramAlpha.tsx  # Telegram快讯
+    │   └── TwitterTrends.tsx  # Twitter趋势
     ├── KolPortalView.tsx      # KOL矩阵门户
     ├── BountyHallView.tsx     # 赏金大厅
     ├── AcademyView.tsx        # H-学院

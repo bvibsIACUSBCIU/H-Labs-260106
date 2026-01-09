@@ -12,7 +12,13 @@ import { FundView } from './FundView';
 
 // Binance API
 const BINANCE_API = "https://api.binance.com/api/v3";
-const DEFAULT_SYMBOLS = ['BTCUSDT', 'ETHUSDT', 'SOLUSDT', 'BNBUSDT'];
+const DEFAULT_SYMBOLS = [
+  'BTCUSDT', 'ETHUSDT', 'SOLUSDT', 'BNBUSDT', 'XRPUSDT',
+  'ADAUSDT', 'DOGEUSDT', 'DOTUSDT', 'TRXUSDT', 'AVAXUSDT',
+  'LINKUSDT', 'SHIBUSDT', 'LTCUSDT', 'NEARUSDT', 'APTUSDT',
+  'SUIUSDT', 'PEPEUSDT', 'ARBUSDT', 'OPUSDT', 'RENDERUSDT',
+  'TAOUSDT', 'FETUSDT', 'INJUSDT', 'SEIUSDT', 'TIAUSDT', 'WIFUSDT'
+];
 
 interface BinanceTickerData {
   symbol: string;
@@ -39,14 +45,14 @@ export const Dashboard = ({ onLogout, lang }: DashboardProps) => {
       const symbolsParam = JSON.stringify(symbols);
       const response = await fetch(`${BINANCE_API}/ticker/24hr?symbols=${symbolsParam}`);
       if (!response.ok) throw new Error('Binance API error');
-      
+
       const data = await response.json();
-      
+
       const formatted: BinanceTickerData[] = data.map((ticker: any) => {
         const displaySymbol = ticker.symbol.replace('USDT', '');
         const price = parseFloat(ticker.lastPrice);
         const change = parseFloat(ticker.priceChangePercent);
-        
+
         return {
           symbol: ticker.symbol,
           displaySymbol,
@@ -55,7 +61,7 @@ export const Dashboard = ({ onLogout, lang }: DashboardProps) => {
           trend: change >= 0 ? 'up' : 'down'
         };
       });
-      
+
       setMarketData(formatted);
     } catch (err) {
       console.error("Binance API Error:", err);
@@ -71,25 +77,25 @@ export const Dashboard = ({ onLogout, lang }: DashboardProps) => {
 
   return (
     <div className="flex flex-col md:flex-row min-h-screen bg-[#050b1d]">
-      <DashboardSidebar 
-        activeTab={activeTab} 
-        setTab={setActiveTab} 
-        onLogout={onLogout} 
+      <DashboardSidebar
+        activeTab={activeTab}
+        setTab={setActiveTab}
+        onLogout={onLogout}
         lang={lang}
         translations={translations}
       />
-      
+
       <div className="flex-1 flex flex-col h-screen overflow-hidden">
         <TickerTape marketData={marketData} gasPrice={gasPrice} />
-        
+
         <main className="flex-1 overflow-y-auto p-4 md:p-8 pb-20 md:pb-0 custom-scrollbar relative">
           {/* Background Grid for Terminal */}
           <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:2rem_2rem] opacity-5 pointer-events-none" />
-          
+
           <div className="relative z-10 max-w-7xl mx-auto">
             {activeTab === 'war_room' && (
-              <WarRoomDashboard 
-                lang={lang} 
+              <WarRoomDashboard
+                lang={lang}
                 translations={translations}
                 marketData={marketData}
                 gasPrice={gasPrice}
@@ -105,10 +111,10 @@ export const Dashboard = ({ onLogout, lang }: DashboardProps) => {
           </div>
         </main>
       </div>
-      <MobileBottomNav 
-        activeTab={activeTab} 
-        setTab={setActiveTab} 
-        onLogout={onLogout} 
+      <MobileBottomNav
+        activeTab={activeTab}
+        setTab={setActiveTab}
+        onLogout={onLogout}
         lang={lang}
         translations={translations}
       />
