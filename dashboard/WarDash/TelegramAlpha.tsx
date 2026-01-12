@@ -42,76 +42,91 @@ export const TelegramAlpha: React.FC<TelegramAlphaProps> = ({ lang }) => {
 
     // 获取 Telegram 频道最新消息列表
     const fetchChannelMessages = async (channel: string) => {
-        try {
-            const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(`https://t.me/s/${channel}`)}`;
-            const response = await fetch(proxyUrl);
-            if (!response.ok) return [];
+        const targetUrl = `https://t.me/s/${channel}?t=${Date.now()}`;
+        const proxies = [
+            (url: string) => `https://corsproxy.io/?url=${encodeURIComponent(url)}`,
+            (url: string) => `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`
+        ];
 
-            const data = await response.json();
-            const html = data.contents;
-            if (!html) return [];
+        let html = '';
+        for (const proxyFn of proxies) {
+            try {
+                const proxyUrl = proxyFn(targetUrl);
+                const response = await fetch(proxyUrl);
+                if (!response.ok) continue;
 
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(html, 'text/html');
-
-            const messageWraps = doc.querySelectorAll('.tgme_widget_message');
-            const posts: any[] = [];
-            const lastWraps = Array.from(messageWraps).slice(-10);
-
-            for (const wrap of lastWraps) {
-                const textElement = wrap.querySelector('.tgme_widget_message_text');
-                if (!textElement) continue;
-
-                // 提取 ID (data-post 属性或链接)
-                let idVal = wrap.getAttribute('data-post')?.split('/').pop();
-                if (!idVal) {
-                    const linkElement = wrap.querySelector('.tgme_widget_message_date') as HTMLAnchorElement;
-                    idVal = linkElement?.href?.split('/').pop();
-                }
-                const id = idVal ? parseInt(idVal) : Math.random();
-
-                const timeElement = wrap.querySelector('.tgme_widget_message_date time');
-                const dateStr = timeElement ? timeElement.getAttribute('datetime') : undefined;
-
-                const authorElement = wrap.querySelector('.tgme_widget_message_author_name');
-                const author = authorElement ? authorElement.textContent?.trim() : undefined;
-
-                const cloned = textElement.cloneNode(true) as HTMLElement;
-
-                // 1. 处理换行和链接
-                cloned.querySelectorAll('br').forEach(br => br.replaceWith('\n'));
-                cloned.querySelectorAll('a').forEach(link => link.remove());
-
-                let text = (cloned as any).innerText || cloned.textContent || '';
-
-                // 2. 核心清理逻辑
-                text = text.replace(/https?:\/\/[^\s]+/g, '');
-                text = text.replace(/\([^\)]*\)/g, '').replace(/（[^）]*）/g, '');
-
-                if (channel === 'CryptoMarketAggregator') {
-                    text = text.replace(/[|｜]{1,}/g, '\n');
+                if (proxyUrl.includes('allorigins')) {
+                    const data = await response.json();
+                    html = data.contents;
+                } else {
+                    html = await response.text();
                 }
 
-                text = text.replace(/^\s*[|｜]\s*/gm, '');
-                text = text.replace(/\s*[|｜]\s*$/gm, '');
-
-                // 3. 用户需求逻辑：两个换行替换为一个；三个及以上换行替换为两个
-                text = text.replace(/\n{2,}/g, (match) => match.length === 2 ? '\n' : '\n\n');
-
-                // 4. 前缀检测
-                if (/^\s*pinned/i.test(text)) {
-                    continue;
-                }
-
-                if (text.trim()) {
-                    posts.push({ id, text: text.trim(), date: dateStr, author, channel });
-                }
+                if (html && html.includes('tgme_widget_message')) break;
+            } catch (err) {
+                console.warn(`Proxy failed for ${channel}, trying next...`);
             }
-            return posts;
-        } catch (err) {
-            console.error(`Error fetching ${channel}:`, err);
-            return [];
         }
+
+        if (!html) return [];
+
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+
+        const messageWraps = doc.querySelectorAll('.tgme_widget_message');
+        const posts: any[] = [];
+        const lastWraps = Array.from(messageWraps).slice(-10);
+
+        for (const wrap of lastWraps) {
+            const textElement = wrap.querySelector('.tgme_widget_message_text');
+            if (!textElement) continue;
+
+            // 提取 ID (data-post 属性或链接)
+            let idVal = wrap.getAttribute('data-post')?.split('/').pop();
+            if (!idVal) {
+                const linkElement = wrap.querySelector('.tgme_widget_message_date') as HTMLAnchorElement;
+                idVal = linkElement?.href?.split('/').pop();
+            }
+            const id = idVal ? parseInt(idVal) : Math.random();
+
+            const timeElement = wrap.querySelector('.tgme_widget_message_date time');
+            const dateStr = timeElement ? timeElement.getAttribute('datetime') : undefined;
+
+            const authorElement = wrap.querySelector('.tgme_widget_message_author_name');
+            const author = authorElement ? authorElement.textContent?.trim() : undefined;
+
+            const cloned = textElement.cloneNode(true) as HTMLElement;
+
+            // 1. 处理换行和链接
+            cloned.querySelectorAll('br').forEach(br => br.replaceWith('\n'));
+            cloned.querySelectorAll('a').forEach(link => link.remove());
+
+            let text = (cloned as any).innerText || cloned.textContent || '';
+
+            // 2. 核心清理逻辑
+            text = text.replace(/https?:\/\/[^\s]+/g, '');
+            text = text.replace(/\([^\)]*\)/g, '').replace(/（[^）]*）/g, '');
+
+            if (channel === 'CryptoMarketAggregator') {
+                text = text.replace(/[|｜]{1,}/g, '\n');
+            }
+
+            text = text.replace(/^\s*[|｜]\s*/gm, '');
+            text = text.replace(/\s*[|｜]\s*$/gm, '');
+
+            // 3. 用户需求逻辑：两个换行替换为一个；三个及以上换行替换为两个
+            text = text.replace(/\n{2,}/g, (match) => match.length === 2 ? '\n' : '\n\n');
+
+            // 4. 前缀检测
+            if (/^\s*pinned/i.test(text)) {
+                continue;
+            }
+
+            if (text.trim()) {
+                posts.push({ id, text: text.trim(), date: dateStr, author, channel });
+            }
+        }
+        return posts;
     };
 
     const refreshAllChannels = async (forceLoading = false) => {

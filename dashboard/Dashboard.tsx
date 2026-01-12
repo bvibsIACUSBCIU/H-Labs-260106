@@ -10,8 +10,15 @@ import { BountyHallView } from './BountyHallView';
 import { AcademyView } from './AcademyView';
 import { FundView } from './FundView';
 
-// Binance API
-const BINANCE_API = "https://api.binance.com/api/v3";
+// Binance API Endpoints
+const BINANCE_ENDPOINTS = [
+  "https://api.binance.com/api/v3",
+  "https://api1.binance.com/api/v3",
+  "https://api2.binance.com/api/v3",
+  "https://api3.binance.com/api/v3",
+  "https://data-api.binance.vision/api/v3"
+];
+
 const DEFAULT_SYMBOLS = [
   'BTCUSDT', 'ETHUSDT', 'SOLUSDT', 'BNBUSDT', 'XRPUSDT',
   'ADAUSDT', 'DOGEUSDT', 'DOTUSDT', 'TRXUSDT', 'AVAXUSDT',
@@ -39,32 +46,41 @@ export const Dashboard = ({ onLogout, lang }: DashboardProps) => {
   const [gasPrice] = useState({ price: '12 gwei', change: '-5%', trend: 'down' as 'up' | 'down' });
   const [searchedSymbols, setSearchedSymbols] = useState<string[]>(DEFAULT_SYMBOLS);
 
-  // 获取币安市场数据
+  // 获取币安市场数据 (带有多个备用节点)
   const fetchBinanceData = async (symbols: string[] = DEFAULT_SYMBOLS) => {
-    try {
-      const symbolsParam = JSON.stringify(symbols);
-      const response = await fetch(`${BINANCE_API}/ticker/24hr?symbols=${symbolsParam}`);
-      if (!response.ok) throw new Error('Binance API error');
+    const symbolsParam = JSON.stringify(symbols);
+    let success = false;
 
-      const data = await response.json();
+    for (const endpoint of BINANCE_ENDPOINTS) {
+      if (success) break;
+      try {
+        const response = await fetch(`${endpoint}/ticker/24hr?symbols=${symbolsParam}`);
+        if (!response.ok) continue;
 
-      const formatted: BinanceTickerData[] = data.map((ticker: any) => {
-        const displaySymbol = ticker.symbol.replace('USDT', '');
-        const price = parseFloat(ticker.lastPrice);
-        const change = parseFloat(ticker.priceChangePercent);
+        const data = await response.json();
+        const formatted: BinanceTickerData[] = data.map((ticker: any) => {
+          const displaySymbol = ticker.symbol.replace('USDT', '');
+          const price = parseFloat(ticker.lastPrice);
+          const change = parseFloat(ticker.priceChangePercent);
 
-        return {
-          symbol: ticker.symbol,
-          displaySymbol,
-          price: price >= 1000 ? `$${price.toLocaleString('en-US', { maximumFractionDigits: 0 })}` : price >= 1 ? `$${price.toFixed(2)}` : `$${price.toFixed(4)}`,
-          change: `${change >= 0 ? '+' : ''}${change.toFixed(1)}%`,
-          trend: change >= 0 ? 'up' : 'down'
-        };
-      });
+          return {
+            symbol: ticker.symbol,
+            displaySymbol,
+            price: price >= 1000 ? `$${price.toLocaleString('en-US', { maximumFractionDigits: 0 })}` : price >= 1 ? `$${price.toFixed(2)}` : `$${price.toFixed(4)}`,
+            change: `${change >= 0 ? '+' : ''}${change.toFixed(1)}%`,
+            trend: change >= 0 ? 'up' : 'down'
+          };
+        });
 
-      setMarketData(formatted);
-    } catch (err) {
-      console.error("Binance API Error:", err);
+        setMarketData(formatted);
+        success = true;
+      } catch (err) {
+        console.warn(`Binance endpoint ${endpoint} failed, trying next...`);
+      }
+    }
+
+    if (!success) {
+      console.error("All Binance API endpoints failed.");
     }
   };
 
